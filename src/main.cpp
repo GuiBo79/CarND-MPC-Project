@@ -91,15 +91,66 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
-
+          double delta = j[1]["steering_angle"];;
+          double acell = j[1]["throttle"];
+            
+          Eigen::VectorXd ptsx_car(ptsx.size());
+          Eigen::VectorXd ptsy_car(ptsy.size());
+            
+            
+          // Convert points to car perpective
+          for (int i=0 ; i < ptsx.size() ; i++){
+              
+              double x_car = ptsx[i] - px;
+              double y_car = ptsy[i] - py;
+              
+              ptsx_car[i] = x_car * cos(-psi) - y_car * sin(-psi);
+              ptsy_car[i] = x_car * sin(-psi) + y_car * cos(-psi);
+    
+          }
+          
+          // Fit 3th order coefficients
+          auto coeff = polyfit(ptsx_car, ptsy_car, 3);
+          
+          //Initial State
+          double x_init = 0.0;
+          double y_init = 0.0;
+          double psi_init = 0.0;
+          double dt = 0.1;
+          double Lf = 2.67;
+            
+          // Evaluation of the coefficients
+          auto cte_init = polyeval(coeff, 0);
+         
+          // Calculating Epsi
+          auto epsi_init = -atan(coeff[1]);
+            
+          //State Prediction
+          double x_pred = x_init + v*cos(psi_init)*dt;
+          double y_pred = y_init + v*sin(psi_init)*dt;
+          double psi_pred = psi_init + (v/Lf)*delta*dt;
+          double v_pred = v + acell*dt;
+          double cte_pred = cte_init + v*sin(epsi_init)*dt;
+          double epsi_pred = epsi_init -(v/Lf)*delta*dt;
+          
+          //State Vector
+          Eigen::VectorXd state(6);
+          state << x_pred, y_pred, psi_pred, v_pred, cte_pred, epsi_pred;
+            
+          // Solver
+          auto vars = mpc.Solve(state, coeff);
+            
           /*
           * TODO: Calculate steering angle and throttle using MPC.
           *
           * Both are in between [-1, 1].
           *
           */
-          double steer_value;
-          double throttle_value;
+            
+          double steer_value = vars[0] / (deg2rad(25) * Lf);;
+          double throttle_value = vars[1];
+            
+          
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
