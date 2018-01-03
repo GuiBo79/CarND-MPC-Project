@@ -118,6 +118,7 @@ int main() {
           double psi_init = 0.0;
           double dt = 0.1;
           double Lf = 2.67;
+          int N = 10;
             
           // Evaluation of the coefficients
           auto cte_init = polyeval(coeff, 0);
@@ -131,7 +132,7 @@ int main() {
           double psi_pred = psi_init + (v/Lf)*delta*dt;
           double v_pred = v + acell*dt;
           double cte_pred = cte_init + v*sin(epsi_init)*dt;
-          double epsi_pred = epsi_init -(v/Lf)*delta*dt;
+          double epsi_pred = epsi_init -(v/Lf)*delta*dt; //changed to fit simulator requirements 
           
           //State Vector
           Eigen::VectorXd state(6);
@@ -150,6 +151,9 @@ int main() {
           double steer_value = vars[0] / (deg2rad(25) * Lf);;
           double throttle_value = vars[1];
             
+          //Visualization
+            
+            
           
 
           json msgJson;
@@ -161,16 +165,31 @@ int main() {
           //Display the MPC predicted trajectory 
           vector<double> mpc_x_vals;
           vector<double> mpc_y_vals;
+          
+          /*
+          for (int i = 2; i <= 2*N ; i=i+2){
+              mpc_x_vals.push_back(vars[i]);
+              mpc_y_vals.push_back(vars[i-1]);
+          }*/
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
 
           msgJson["mpc_x"] = mpc_x_vals;
           msgJson["mpc_y"] = mpc_y_vals;
-
+          
           //Display the waypoints/reference line
           vector<double> next_x_vals;
           vector<double> next_y_vals;
+           
+          /*
+          for (int i=0 ; i < ptsx_car.size(); i++){
+              
+              next_x_vals.push_back(ptsx_car[i]);
+              next_y_vals.push_back(ptsy_car[i]);
+    
+          }*/
+            
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line

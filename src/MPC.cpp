@@ -8,8 +8,11 @@ using CppAD::AD;
 
 // We set the number of timesteps to 25
 // and the timestep evaluation frequency or evaluation
-size_t N = 10;
-double dt = 0.1;
+const size_t N = 10;
+const double dt = 0.1;
+
+
+
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -25,7 +28,7 @@ const double Lf = 2.67;
 
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 40 mph.
-const double ref_v = 20;
+const double ref_v = 50;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -56,17 +59,17 @@ public:
         
         // Cost Penalty
         const int cte_cost = 1;
-        const int epsi_cost = 1;
-        const int v_cost = 1;
-        const int delta_cost = 5;
-        const int a_cost = 5;
-        const int delta_cost_w = 10;
-        const int a_cost_w = 10;
+        const int psi_cost = 10;
+        const int v_cost = 10;
+        const int delta_cost = 1000;
+        const int a_cost = 150;
+        const int delta_cost_w = 1000;
+        const int a_cost_w = 150;
         
         // Cost for CTE, psi error and velocity
         for (int t = 0; t < N; t++) {
             fg[0] += cte_cost * CppAD::pow(vars[cte_start + t], 2);
-            fg[0] += epsi_cost * CppAD::pow(vars[epsi_start + t], 2);
+            fg[0] += psi_cost * CppAD::pow(vars[epsi_start + t], 2);
             fg[0] += v_cost * CppAD::pow(vars[v_start + t] - ref_v, 2);
         }
         
