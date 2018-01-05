@@ -9,7 +9,7 @@ using CppAD::AD;
 // We set the number of timesteps to 25
 // and the timestep evaluation frequency or evaluation
 const size_t N = 10;
-const double dt = 0.1;
+const double dt = 0.08;
 
 
 
@@ -28,7 +28,7 @@ const double Lf = 2.67;
 
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 40 mph.
-const double ref_v = 50;
+const double ref_v = 40;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -58,13 +58,13 @@ public:
         fg[0] = 0;
         
         // Cost Penalty
-        const int cte_cost = 1;
-        const int psi_cost = 10;
-        const int v_cost = 10;
-        const int delta_cost = 1000;
+        const int cte_cost = 100;
+        const int psi_cost = 3000;
+        const int v_cost = 5;
+        const int delta_cost = 2000;
         const int a_cost = 150;
-        const int delta_cost_w = 1000;
-        const int a_cost_w = 150;
+        const int delta_cost_w = 2000;
+        const int a_cost_w = 500;
         
         // Cost for CTE, psi error and velocity
         for (int t = 0; t < N; t++) {
@@ -144,12 +144,12 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
     typedef CPPAD_TESTVECTOR(double) Dvector;
     
     // State vector holds all current values neede for vars below
-    double x = state[0];
-    double y = state[1];
-    double psi = state[2];
-    double v = state[3];
-    double cte = state[4];
-    double epsi = state[5];
+    const double x = state[0];
+    const double y = state[1];
+    const double psi = state[2];
+    const double v = state[3];
+    const double cte = state[4];
+    const double epsi = state[5];
     
     // Setting the number of model variables (includes both states and inputs).
     // N * state vector size + (N - 1) * 2 actuators (For steering & acceleration)

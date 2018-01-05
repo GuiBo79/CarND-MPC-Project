@@ -91,7 +91,8 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
-          double delta = j[1]["steering_angle"];;
+            v *= 0.44704; // convert to m/s 
+          double delta = j[1]["steering_angle"];
           double acell = j[1]["throttle"];
             
           Eigen::VectorXd ptsx_car(ptsx.size());
@@ -113,7 +114,7 @@ int main() {
           auto coeff = polyfit(ptsx_car, ptsy_car, 3);
           
           //Initial State
-          double x_init = 0.0;
+          double x_init = 0.0 + v*0.1; //Including latency 
           double y_init = 0.0;
           double psi_init = 0.0;
           double dt = 0.1;
@@ -129,7 +130,7 @@ int main() {
           //State Prediction
           double x_pred = x_init + v*cos(psi_init)*dt;
           double y_pred = y_init + v*sin(psi_init)*dt;
-          double psi_pred = psi_init + (v/Lf)*delta*dt;
+          double psi_pred = psi_init - (v/Lf)*delta*dt; //changed to fit simulator requirements 
           double v_pred = v + acell*dt;
           double cte_pred = cte_init + v*sin(epsi_init)*dt;
           double epsi_pred = epsi_init -(v/Lf)*delta*dt; //changed to fit simulator requirements 
